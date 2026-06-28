@@ -3,9 +3,11 @@ const productService = require('../services/productService');
 class ProductController {
   async getAll(req, res, next) {
     try {
+      console.log('[GET /api/products] query:', req.query);
       const result = await productService.findAll(req.query);
       res.json(result);
     } catch (err) {
+      console.error('[GET /api/products] ERROR:', err.message, err.stack);
       next(err);
     }
   }
