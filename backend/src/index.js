@@ -20,10 +20,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:4173',
-  'https://doan3-minhthu.vercel.app',
-  'https://doan3-git-main-minhthu.vercel.app',
-  'https://doan3-88iznaum6-minhthu.vercel.app',
-  'https://doan3-6kemo3hsj-minhthu.vercel.app',
+  /^https:\/\/.*\.vercel\.app$/,
 ];
 
 app.use(cors({
