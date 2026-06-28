@@ -1,5 +1,6 @@
 const prisma = require('../services/prisma');
 const ApiFeatures = require('../utils/apiFeatures');
+const { serialize } = require('../utils/serialize');
 
 class ProductRepository {
   async findAll(queryString) {
@@ -10,35 +11,35 @@ class ProductRepository {
       features.query,
       prisma.product.count({ where: features.getWhere() }),
     ]);
-    return { data, total };
+    return { data: serialize(data), total };
   }
 
   async findById(id) {
-    return prisma.product.findUnique({ where: { id } });
+    return serialize(await prisma.product.findUnique({ where: { id } }));
   }
 
   async findBySku(sku) {
-    return prisma.product.findUnique({ where: { sku } });
+    return serialize(await prisma.product.findUnique({ where: { sku } }));
   }
 
   async create(data) {
-    return prisma.product.create({ data });
+    return serialize(await prisma.product.create({ data }));
   }
 
   async update(id, data) {
-    return prisma.product.update({ where: { id }, data });
+    return serialize(await prisma.product.update({ where: { id }, data }));
   }
 
   async delete(id) {
-    return prisma.product.delete({ where: { id } });
+    return serialize(await prisma.product.delete({ where: { id } }));
   }
 
   async getCategories() {
-    return prisma.product.findMany({
+    return serialize(await prisma.product.findMany({
       select: { category: true },
       distinct: ['category'],
       where: { category: { not: null } },
-    });
+    }));
   }
 }
 

@@ -1,4 +1,5 @@
 const prisma = require('../services/prisma');
+const { serialize } = require('../utils/serialize');
 
 class SalesOrderRepository {
   async findAll(queryString = {}) {
@@ -30,11 +31,11 @@ class SalesOrderRepository {
       prisma.salesOrder.count({ where }),
     ]);
 
-    return { data, total };
+    return { data: serialize(data), total };
   }
 
   async findById(id) {
-    return prisma.salesOrder.findUnique({
+    return serialize(await prisma.salesOrder.findUnique({
       where: { id },
       include: {
         customer: true,
@@ -43,18 +44,18 @@ class SalesOrderRepository {
         deliveryRequest: true,
         stockOutboundNotes: true,
       },
-    });
+    }));
   }
 
   async create(data, items) {
-    return prisma.salesOrder.create({
+    return serialize(await prisma.salesOrder.create({
       data: { ...data, items: { create: items } },
       include: { customer: true, items: { include: { product: true } } },
-    });
+    }));
   }
 
   async update(id, data, items) {
-    return prisma.$transaction(async (tx) => {
+    return serialize(await prisma.$transaction(async (tx) => {
       const updated = await tx.salesOrder.update({
         where: { id },
         data: {
@@ -69,15 +70,15 @@ class SalesOrderRepository {
         include: { customer: true, items: { include: { product: true } } },
       });
       return updated;
-    });
+    }));
   }
 
   async updateStatus(id, status) {
-    return prisma.salesOrder.update({ where: { id }, data: { status } });
+    return serialize(await prisma.salesOrder.update({ where: { id }, data: { status } }));
   }
 
   async delete(id) {
-    return prisma.salesOrder.delete({ where: { id } });
+    return serialize(await prisma.salesOrder.delete({ where: { id } }));
   }
 }
 

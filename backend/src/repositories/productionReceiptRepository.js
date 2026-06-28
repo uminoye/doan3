@@ -1,4 +1,5 @@
 const prisma = require('../services/prisma');
+const { serialize } = require('../utils/serialize');
 
 class ProductionReceiptRepository {
   async findAll(queryString = {}) {
@@ -31,22 +32,22 @@ class ProductionReceiptRepository {
       prisma.productionReceipt.count({ where }),
     ]);
 
-    return { data, total };
+    return { data: serialize(data), total };
   }
 
   async findById(id) {
-    return prisma.productionReceipt.findUnique({
+    return serialize(await prisma.productionReceipt.findUnique({
       where: { id },
       include: {
         warehouse: true,
         creator: { select: { id: true, fullName: true } },
         items: { include: { product: true } },
       },
-    });
+    }));
   }
 
   async create(data, items) {
-    return prisma.productionReceipt.create({
+    return serialize(await prisma.productionReceipt.create({
       data: {
         ...data,
         items: { create: items },
@@ -55,11 +56,11 @@ class ProductionReceiptRepository {
         warehouse: true,
         items: { include: { product: true } },
       },
-    });
+    }));
   }
 
   async update(id, data, items) {
-    return prisma.$transaction(async (tx) => {
+    return serialize(await prisma.$transaction(async (tx) => {
       const updated = await tx.productionReceipt.update({
         where: { id },
         data: {
@@ -74,11 +75,11 @@ class ProductionReceiptRepository {
         include: { warehouse: true, items: { include: { product: true } } },
       });
       return updated;
-    });
+    }));
   }
 
   async confirm(id) {
-    return prisma.$transaction(async (tx) => {
+    return serialize(await prisma.$transaction(async (tx) => {
       const receipt = await tx.productionReceipt.update({
         where: { id },
         data: { status: 'confirmed' },
@@ -109,11 +110,11 @@ class ProductionReceiptRepository {
       }
 
       return receipt;
-    });
+    }));
   }
 
   async delete(id) {
-    return prisma.productionReceipt.delete({ where: { id } });
+    return serialize(await prisma.productionReceipt.delete({ where: { id } }));
   }
 }
 

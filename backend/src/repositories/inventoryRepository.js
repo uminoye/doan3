@@ -1,4 +1,5 @@
 const prisma = require('../services/prisma');
+const { serialize } = require('../utils/serialize');
 
 class InventoryRepository {
   async getBalances(queryString = {}) {
@@ -24,7 +25,7 @@ class InventoryRepository {
       prisma.inventoryBalance.count({ where }),
     ]);
 
-    return { data, total };
+    return { data: serialize(data), total };
   }
 
   async getTransactions(queryString = {}) {
@@ -58,7 +59,7 @@ class InventoryRepository {
       prisma.inventoryTransaction.count({ where }),
     ]);
 
-    return { data, total };
+    return { data: serialize(data), total };
   }
 
   async getInwardReport(queryString = {}) {
@@ -87,7 +88,7 @@ class InventoryRepository {
       })
     );
 
-    return enriched;
+    return serialize(enriched);
   }
 
   async getOutwardReport(queryString = {}) {
@@ -116,7 +117,7 @@ class InventoryRepository {
       })
     );
 
-    return enriched;
+    return serialize(enriched);
   }
 
   async getDashboard() {
@@ -148,7 +149,15 @@ class InventoryRepository {
       take: 10,
     });
 
-    return { totalProducts, totalCustomers, totalOrders, totalReceipts, recentInward, recentOutward, lowStock };
+    return {
+      totalProducts,
+      totalCustomers,
+      totalOrders,
+      totalReceipts,
+      recentInward: serialize(recentInward),
+      recentOutward: serialize(recentOutward),
+      lowStock: serialize(lowStock),
+    };
   }
 }
 

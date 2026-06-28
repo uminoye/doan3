@@ -1,5 +1,6 @@
 const prisma = require('../services/prisma');
 const ApiFeatures = require('../utils/apiFeatures');
+const { serialize } = require('../utils/serialize');
 
 class UserRepository {
   async findAll(queryString) {
@@ -10,30 +11,30 @@ class UserRepository {
       features.query,
       prisma.user.count({ where: features.getWhere() }),
     ]);
-    return { data, total };
+    return { data: serialize(data), total };
   }
 
   async findById(id) {
-    return prisma.user.findUnique({ where: { id }, include: { role: true } });
+    return serialize(await prisma.user.findUnique({ where: { id }, include: { role: true } }));
   }
 
   async create(data) {
-    return prisma.user.create({ data, include: { role: true } });
+    return serialize(await prisma.user.create({ data, include: { role: true } }));
   }
 
   async update(id, data) {
-    return prisma.user.update({ where: { id }, data, include: { role: true } });
+    return serialize(await prisma.user.update({ where: { id }, data, include: { role: true } }));
   }
 
   async delete(id) {
-    return prisma.user.delete({ where: { id } });
+    return serialize(await prisma.user.delete({ where: { id } }));
   }
 
   async countByRole() {
-    return prisma.user.groupBy({
+    return serialize(await prisma.user.groupBy({
       by: ['roleId'],
       _count: { id: true },
-    });
+    }));
   }
 }
 

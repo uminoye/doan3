@@ -1,4 +1,5 @@
 const prisma = require('../services/prisma');
+const { serialize } = require('../utils/serialize');
 
 class StockOutboundRepository {
   async findAll(queryString = {}) {
@@ -29,11 +30,11 @@ class StockOutboundRepository {
       prisma.stockOutboundNote.count({ where }),
     ]);
 
-    return { data, total };
+    return { data: serialize(data), total };
   }
 
   async findById(id) {
-    return prisma.stockOutboundNote.findUnique({
+    return serialize(await prisma.stockOutboundNote.findUnique({
       where: { id },
       include: {
         warehouse: true,
@@ -41,18 +42,18 @@ class StockOutboundRepository {
         creator: { select: { id: true, fullName: true } },
         items: { include: { product: true } },
       },
-    });
+    }));
   }
 
   async create(data, items) {
-    return prisma.stockOutboundNote.create({
+    return serialize(await prisma.stockOutboundNote.create({
       data: { ...data, items: { create: items } },
       include: { warehouse: true, items: { include: { product: true } } },
-    });
+    }));
   }
 
   async update(id, data, items) {
-    return prisma.$transaction(async (tx) => {
+    return serialize(await prisma.$transaction(async (tx) => {
       const updated = await tx.stockOutboundNote.update({
         where: { id },
         data: {
@@ -62,11 +63,11 @@ class StockOutboundRepository {
         include: { warehouse: true, items: { include: { product: true } } },
       });
       return updated;
-    });
+    }));
   }
 
   async confirm(id) {
-    return prisma.$transaction(async (tx) => {
+    return serialize(await prisma.$transaction(async (tx) => {
       const note = await tx.stockOutboundNote.update({
         where: { id },
         data: { status: 'confirmed' },
@@ -107,11 +108,11 @@ class StockOutboundRepository {
       }
 
       return note;
-    });
+    }));
   }
 
   async delete(id) {
-    return prisma.stockOutboundNote.delete({ where: { id } });
+    return serialize(await prisma.stockOutboundNote.delete({ where: { id } }));
   }
 }
 

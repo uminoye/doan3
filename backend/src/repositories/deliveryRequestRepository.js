@@ -1,4 +1,5 @@
 const prisma = require('../services/prisma');
+const { serialize } = require('../utils/serialize');
 
 class DeliveryRequestRepository {
   async findAll(queryString = {}) {
@@ -26,42 +27,42 @@ class DeliveryRequestRepository {
       prisma.deliveryRequest.count({ where }),
     ]);
 
-    return { data, total };
+    return { data: serialize(data), total };
   }
 
   async findById(id) {
-    return prisma.deliveryRequest.findUnique({
+    return serialize(await prisma.deliveryRequest.findUnique({
       where: { id },
       include: {
         salesOrder: { include: { customer: true, items: { include: { product: true } } } },
         receiver: { select: { id: true, fullName: true } },
       },
-    });
+    }));
   }
 
   async create(data) {
-    return prisma.deliveryRequest.create({
+    return serialize(await prisma.deliveryRequest.create({
       data,
       include: {
         salesOrder: { include: { customer: true, items: { include: { product: true } } } },
         receiver: { select: { fullName: true } },
       },
-    });
+    }));
   }
 
   async updateStatus(id, status, note) {
-    return prisma.deliveryRequest.update({
+    return serialize(await prisma.deliveryRequest.update({
       where: { id },
       data: { status, note },
       include: {
         salesOrder: { include: { customer: true } },
         receiver: { select: { fullName: true } },
       },
-    });
+    }));
   }
 
   async delete(id) {
-    return prisma.deliveryRequest.delete({ where: { id } });
+    return serialize(await prisma.deliveryRequest.delete({ where: { id } }));
   }
 }
 
