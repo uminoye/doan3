@@ -4,8 +4,26 @@ const ApiFeatures = require('../utils/apiFeatures');
 class WarehouseRepository {
   async findAll(queryString) {
     const features = new ApiFeatures(prisma.warehouse.findMany(), queryString);
+
+    const excludes = ['page', 'sort', 'limit', 'fields', 'search'];
+    const filterWhere = {};
+    for (const key of Object.keys(queryString)) {
+      if (!excludes.includes(key) && queryString[key] !== '' && queryString[key] !== undefined) {
+        filterWhere[key] = queryString[key];
+      }
+    }
+    const search = queryString.search;
+    const searchWhere = (search)
+      ? { OR: ['name', 'warehouseCode', 'location'].map((field) => ({ [field]: { contains: search, mode: 'insensitive' } })) }
+      : {};
+
     features.filter().search(['name', 'warehouseCode', 'location']).sort().paginate();
-    return { data: await features.query, total: await prisma.warehouse.count({ where: features.query._conditions }) };
+
+    const [data, total] = await Promise.all([
+      features.query,
+      prisma.warehouse.count({ where: { ...filterWhere, ...searchWhere } }),
+    ]);
+    return { data, total };
   }
 
   async findById(id) {

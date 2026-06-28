@@ -1,4 +1,9 @@
 const warehouseRepository = require('../repositories/warehouseRepository');
+const prisma = require('../services/prisma');
+
+function generateCode(prefix) {
+  return prefix + Date.now().toString().slice(-6);
+}
 
 class WarehouseService {
   async findAll(queryString) {
@@ -18,7 +23,10 @@ class WarehouseService {
   }
 
   async create(data) {
-    return warehouseRepository.create(data);
+    const warehouseCode = data.warehouseCode && data.warehouseCode.trim()
+      ? data.warehouseCode.trim()
+      : generateCode('WH');
+    return warehouseRepository.create({ ...data, warehouseCode });
   }
 
   async update(id, data) {

@@ -84,7 +84,9 @@ export default function CustomersPage() {
 
       <Modal open={modal.open} onClose={() => setModal({ ...modal, open: false })} title={modal.mode === 'create' ? 'Thêm khách hàng' : 'Sửa khách hàng'} size="sm">
         <div className="space-y-3">
-          <div><label className="block text-sm font-medium mb-1">Mã khách hàng *</label><input className="input-field" value={form.customerCode} onChange={(e) => setForm({ ...form, customerCode: e.target.value })} placeholder="KH001" /></div>
+          {modal.mode === 'edit' && (
+            <div><label className="block text-sm font-medium mb-1">Mã khách hàng</label><input className="input-field" value={form.customerCode} readOnly /></div>
+          )}
           <div><label className="block text-sm font-medium mb-1">Tên khách hàng *</label><input className="input-field" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Cửa hàng..." /></div>
           <div><label className="block text-sm font-medium mb-1">Số điện thoại</label><input className="input-field" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="090..." /></div>
           <div><label className="block text-sm font-medium mb-1">Địa chỉ</label><textarea className="input-field" rows={2} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></div>

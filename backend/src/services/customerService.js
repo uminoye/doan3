@@ -1,4 +1,9 @@
 const customerRepository = require('../repositories/customerRepository');
+const prisma = require('../services/prisma');
+
+function generateCode(prefix) {
+  return prefix + Date.now().toString().slice(-6);
+}
 
 class CustomerService {
   async findAll(queryString) {
@@ -14,7 +19,10 @@ class CustomerService {
   }
 
   async create(data) {
-    return customerRepository.create(data);
+    const customerCode = data.customerCode && data.customerCode.trim()
+      ? data.customerCode.trim()
+      : generateCode('KH');
+    return customerRepository.create({ ...data, customerCode });
   }
 
   async update(id, data) {

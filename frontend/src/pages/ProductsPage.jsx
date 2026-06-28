@@ -93,7 +93,9 @@ export default function ProductsPage() {
 
       <Modal open={modal.open} onClose={() => setModal({ ...modal, open: false })} title={modal.mode === 'create' ? 'Thêm sản phẩm' : 'Sửa sản phẩm'} size="sm">
         <div className="space-y-3">
-          <div><label className="block text-sm font-medium mb-1">SKU *</label><input className="input-field" value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} placeholder="SKU001" /></div>
+          {modal.mode === 'edit' && (
+            <div><label className="block text-sm font-medium mb-1">SKU</label><input className="input-field" value={form.sku} readOnly /></div>
+          )}
           <div><label className="block text-sm font-medium mb-1">Tên sản phẩm *</label><input className="input-field" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Tên sản phẩm" /></div>
           <div className="grid grid-cols-2 gap-3">
             <div><label className="block text-sm font-medium mb-1">Đơn vị</label><input className="input-field" value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} placeholder="hộp" /></div>

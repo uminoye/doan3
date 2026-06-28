@@ -81,7 +81,9 @@ export default function WarehousesPage() {
 
       <Modal open={modal.open} onClose={() => setModal({ ...modal, open: false })} title={modal.mode === 'create' ? 'Thêm kho' : 'Sửa kho'} size="sm">
         <div className="space-y-3">
-          <div><label className="block text-sm font-medium mb-1">Mã kho *</label><input className="input-field" value={form.warehouseCode} onChange={(e) => setForm({ ...form, warehouseCode: e.target.value })} placeholder="WH001" /></div>
+          {modal.mode === 'edit' && (
+            <div><label className="block text-sm font-medium mb-1">Mã kho</label><input className="input-field" value={form.warehouseCode} readOnly /></div>
+          )}
           <div><label className="block text-sm font-medium mb-1">Tên kho *</label><input className="input-field" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
           <div><label className="block text-sm font-medium mb-1">Địa điểm</label><input className="input-field" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} /></div>
           <div className="flex gap-2 pt-2">

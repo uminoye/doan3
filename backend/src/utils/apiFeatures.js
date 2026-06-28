@@ -13,7 +13,9 @@ class ApiFeatures {
         where[key] = this.queryString[key];
       }
     }
-    this.query = this.query.where(where);
+    if (Object.keys(where).length > 0) {
+      this.query = this.query.where(where);
+    }
     return this;
   }
 

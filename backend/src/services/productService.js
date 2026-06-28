@@ -1,4 +1,9 @@
 const productRepository = require('../repositories/productRepository');
+const prisma = require('../services/prisma');
+
+function generateSku() {
+  return 'SKU' + Date.now().toString().slice(-8);
+}
 
 class ProductService {
   async findAll(queryString) {
@@ -14,7 +19,8 @@ class ProductService {
   }
 
   async create(data) {
-    return productRepository.create(data);
+    const sku = data.sku && data.sku.trim() ? data.sku.trim() : generateSku();
+    return productRepository.create({ ...data, sku });
   }
 
   async update(id, data) {
