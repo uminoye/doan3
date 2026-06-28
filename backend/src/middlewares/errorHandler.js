@@ -1,6 +1,16 @@
 // Middleware xử lý lỗi global
 function errorHandler(err, req, res, next) {
-  console.error('Error:', err);
+  const statusCode = err.statusCode || 500;
+
+  // Log chi tiết ra console (Render log)
+  if (statusCode >= 500) {
+    console.error(`[${req.method} ${req.originalUrl}] ${statusCode} ERROR:`, err.message);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(err.stack);
+    }
+  } else {
+    console.warn(`[${req.method} ${req.originalUrl}] ${statusCode} WARN:`, err.message);
+  }
 
   // Prisma errors
   if (err.code === 'P2002') {
@@ -21,7 +31,6 @@ function errorHandler(err, req, res, next) {
   }
 
   // Default
-  const statusCode = err.statusCode || 500;
   const message = err.message || 'Lỗi server nội bộ';
   res.status(statusCode).json({ error: message });
 }

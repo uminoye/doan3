@@ -6,6 +6,7 @@ class CustomerController {
       const result = await customerService.findAll(req.query);
       res.json(result);
     } catch (err) {
+      console.error('[GET /api/customers] ERROR:', err.message, err.stack);
       next(err);
     }
   }
