@@ -17,7 +17,7 @@ class CustomerRepository {
     }
     const search = queryString.search;
     const searchWhere = (search)
-      ? { OR: ['name', 'customerCode', 'phone'].map((field) => ({ [field]: { contains: search, mode: 'insensitive' } })) }
+      ? { OR: ['name', 'customerCode', 'phone'].map((field) => ({ [field]: { contains: search } })) }
       : {};
 
     features.filter().search(['name', 'customerCode', 'phone']).sort().paginate();

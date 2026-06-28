@@ -14,7 +14,7 @@ class ProductRepository {
     }
     const search = queryString.search;
     const searchWhere = (search)
-      ? { OR: ['name', 'sku', 'category'].map((field) => ({ [field]: { contains: search, mode: 'insensitive' } })) }
+      ? { OR: ['name', 'sku', 'category'].map((field) => ({ [field]: { contains: search } })) }
       : {};
 
     features.filter().search(['name', 'sku', 'category']).sort().paginate();

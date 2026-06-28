@@ -14,7 +14,7 @@ class UserRepository {
     }
     const search = queryString.search;
     const searchWhere = (search)
-      ? { OR: ['fullName', 'email'].map((field) => ({ [field]: { contains: search, mode: 'insensitive' } })) }
+      ? { OR: ['fullName', 'email'].map((field) => ({ [field]: { contains: search } })) }
       : {};
 
     features.filter().search(['fullName', 'email']).sort().paginate();

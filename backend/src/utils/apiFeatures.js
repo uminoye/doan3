@@ -24,7 +24,7 @@ class ApiFeatures {
     if (search && fields.length > 0) {
       this.query = this.query.where({
         OR: fields.map((field) => ({
-          [field]: { contains: search, mode: 'insensitive' },
+          [field]: { contains: search },
         })),
       });
     }

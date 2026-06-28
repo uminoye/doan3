@@ -14,7 +14,7 @@ class WarehouseRepository {
     }
     const search = queryString.search;
     const searchWhere = (search)
-      ? { OR: ['name', 'warehouseCode', 'location'].map((field) => ({ [field]: { contains: search, mode: 'insensitive' } })) }
+      ? { OR: ['name', 'warehouseCode', 'location'].map((field) => ({ [field]: { contains: search } })) }
       : {};
 
     features.filter().search(['name', 'warehouseCode', 'location']).sort().paginate();
