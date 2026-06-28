@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f4efe7;
+  --surface: #fffdf8;
+  --surface-2: #f7f1e7;
+  --text: #1f2933;
+  --muted: #52606d;
+  --line: #d9c9af;
+  --brand: #a63d40;
+  --brand-soft: #f6d9ca;
+  --accent: #1d6f5f;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 rounded-lg font-medium text-white bg-brand hover:opacity-90 transition;
+  }
+  .btn-secondary {
+    @apply px-4 py-2 rounded-lg font-medium text-brand border border-brand hover:bg-brand-soft transition;
+  }
+  .btn-accent {
+    @apply px-4 py-2 rounded-lg font-medium text-white bg-accent hover:opacity-90 transition;
+  }
+  .btn-danger {
+    @apply px-4 py-2 rounded-lg font-medium text-white bg-red-600 hover:bg-red-700 transition;
+  }
+  .input-field {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent;
+  }
+  .select-field {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent bg-white;
+  }
+  .card {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm;
+  }
+  .table-header {
+    @apply bg-rose-50 text-brand font-semibold;
+  }
+  .table-row {
+    @apply border-b border-gray-100 hover:bg-gray-50 transition;
+  }
+  .badge {
+    @apply inline-block px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-draft { @apply bg-gray-200 text-gray-600; }
+  .badge-submitted { @apply bg-blue-100 text-blue-700; }
+  .badge-logistics { @apply bg-purple-100 text-purple-700; }
+  .badge-warehouse { @apply bg-amber-100 text-amber-700; }
+  .badge-completed { @apply bg-green-100 text-green-700; }
+  .badge-cancelled { @apply bg-red-100 text-red-600; }
+  .badge-confirmed { @apply bg-green-100 text-green-700; }
+}
