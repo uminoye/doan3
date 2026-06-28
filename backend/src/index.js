@@ -23,6 +23,7 @@ const allowedOrigins = [
   'https://doan3-minhthu.vercel.app',
   'https://doan3-git-main-minhthu.vercel.app',
   'https://doan3-88iznaum6-minhthu.vercel.app',
+  'https://doan3-6kemo3hsj-minhthu.vercel.app',
 ];
 
 app.use(cors({
