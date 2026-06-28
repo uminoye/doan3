@@ -8,23 +8,11 @@ class CustomerRepository {
       queryString
     );
 
-    const excludes = ['page', 'sort', 'limit', 'fields', 'search'];
-    const filterWhere = {};
-    for (const key of Object.keys(queryString)) {
-      if (!excludes.includes(key) && queryString[key] !== '' && queryString[key] !== undefined) {
-        filterWhere[key] = queryString[key];
-      }
-    }
-    const search = queryString.search;
-    const searchWhere = (search)
-      ? { OR: ['name', 'customerCode', 'phone'].map((field) => ({ [field]: { contains: search } })) }
-      : {};
-
-    features.filter().search(['name', 'customerCode', 'phone']).sort().paginate();
+    features.filter().search(['name', 'customerCode', 'phone']).sort().paginate().build();
 
     const [data, total] = await Promise.all([
       features.query,
-      prisma.customer.count({ where: { ...filterWhere, ...searchWhere } }),
+      prisma.customer.count({ where: features.getWhere() }),
     ]);
     return { data, total };
   }

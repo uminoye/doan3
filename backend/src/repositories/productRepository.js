@@ -4,24 +4,11 @@ const ApiFeatures = require('../utils/apiFeatures');
 class ProductRepository {
   async findAll(queryString) {
     const features = new ApiFeatures(prisma.product.findMany(), queryString);
-
-    const where = {};
-    const excludes = ['page', 'sort', 'limit', 'fields', 'search'];
-    for (const key of Object.keys(queryString)) {
-      if (!excludes.includes(key) && queryString[key] !== '' && queryString[key] !== undefined) {
-        where[key] = queryString[key];
-      }
-    }
-    const search = queryString.search;
-    const searchWhere = (search)
-      ? { OR: ['name', 'sku', 'category'].map((field) => ({ [field]: { contains: search } })) }
-      : {};
-
-    features.filter().search(['name', 'sku', 'category']).sort().paginate();
+    features.filter().search(['name', 'sku', 'category']).sort().paginate().build();
 
     const [data, total] = await Promise.all([
       features.query,
-      prisma.product.count({ where: { ...where, ...searchWhere } }),
+      prisma.product.count({ where: features.getWhere() }),
     ]);
     return { data, total };
   }

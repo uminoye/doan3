@@ -4,24 +4,11 @@ const ApiFeatures = require('../utils/apiFeatures');
 class UserRepository {
   async findAll(queryString) {
     const features = new ApiFeatures(prisma.user.findMany({ include: { role: true } }), queryString);
-
-    const excludes = ['page', 'sort', 'limit', 'fields', 'search'];
-    const filterWhere = {};
-    for (const key of Object.keys(queryString)) {
-      if (!excludes.includes(key) && queryString[key] !== '' && queryString[key] !== undefined) {
-        filterWhere[key] = queryString[key];
-      }
-    }
-    const search = queryString.search;
-    const searchWhere = (search)
-      ? { OR: ['fullName', 'email'].map((field) => ({ [field]: { contains: search } })) }
-      : {};
-
-    features.filter().search(['fullName', 'email']).sort().paginate();
+    features.filter().search(['fullName', 'email']).sort().paginate().build();
 
     const [data, total] = await Promise.all([
       features.query,
-      prisma.user.count({ where: { ...filterWhere, ...searchWhere } }),
+      prisma.user.count({ where: features.getWhere() }),
     ]);
     return { data, total };
   }

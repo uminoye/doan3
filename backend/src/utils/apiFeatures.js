@@ -3,47 +3,80 @@ class ApiFeatures {
   constructor(query, queryString) {
     this.query = query;
     this.queryString = queryString;
+    this._where = {};
+    this._searchFields = [];
+    this._searchTerm = '';
+    this.sortBy = 'createdAt';
+    this.sortOrder = 'desc';
+    this.page = 1;
+    this.limit = 20;
   }
 
   filter() {
     const excludes = ['page', 'sort', 'limit', 'fields', 'search'];
-    const where = {};
     for (const key of Object.keys(this.queryString)) {
       if (!excludes.includes(key) && this.queryString[key] !== '' && this.queryString[key] !== undefined) {
-        where[key] = this.queryString[key];
+        this._where[key] = this.queryString[key];
       }
-    }
-    if (Object.keys(where).length > 0) {
-      this.query = this.query.where(where);
     }
     return this;
   }
 
   search(fields = []) {
-    const search = this.queryString.search;
-    if (search && fields.length > 0) {
-      this.query = this.query.where({
-        OR: fields.map((field) => ({
-          [field]: { contains: search },
-        })),
-      });
-    }
+    this._searchFields = fields;
+    this._searchTerm = this.queryString.search || '';
     return this;
   }
 
   sort() {
-    const sortBy = this.queryString.sort || 'createdAt';
-    const order = this.queryString.order === 'asc' ? 'asc' : 'desc';
-    this.query = this.query.orderBy({ [sortBy]: order });
+    this.sortBy = this.queryString.sort || 'createdAt';
+    this.sortOrder = this.queryString.order === 'asc' ? 'asc' : 'desc';
     return this;
   }
 
   paginate() {
-    const page = parseInt(this.queryString.page) || 1;
-    const limit = parseInt(this.queryString.limit) || 20;
-    const skip = (page - 1) * limit;
-    this.query = this.query.skip(skip).take(limit);
+    this.page = parseInt(this.queryString.page, 10) || 1;
+    this.limit = parseInt(this.queryString.limit, 10) || 20;
     return this;
+  }
+
+  build() {
+    let searchWhere = {};
+    if (this._searchTerm && this._searchFields.length > 0) {
+      searchWhere = {
+        OR: this._searchFields.map((field) => ({
+          [field]: { contains: this._searchTerm },
+        })),
+      };
+    }
+
+    const mergedWhere = Object.keys(searchWhere).length > 0
+      ? { AND: [this._where, searchWhere] }
+      : this._where;
+
+    const skip = (this.page - 1) * this.limit;
+
+    this.query = this.query
+      .where(mergedWhere)
+      .orderBy({ [this.sortBy]: this.sortOrder })
+      .skip(skip)
+      .take(this.limit);
+
+    return this;
+  }
+
+  getWhere() {
+    if (this._searchTerm && this._searchFields.length > 0) {
+      const searchWhere = {
+        OR: this._searchFields.map((field) => ({
+          [field]: { contains: this._searchTerm },
+        })),
+      };
+      return Object.keys(this._where).length > 0
+        ? { AND: [this._where, searchWhere] }
+        : searchWhere;
+    }
+    return this._where;
   }
 }
 
