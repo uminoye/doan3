@@ -17,9 +17,25 @@ const inventoryRoutes = require('./routes/inventoryRoutes');
 
 const app = express();
 
-// Middleware
-app.use(cors());
-app.use(morgan('dev'));
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:4173',
+  'https://doan3-minhthu.vercel.app',
+  'https://doan3-git-main-minhthu.vercel.app',
+  'https://doan3-88iznaum6-minhthu.vercel.app',
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS: origin ${origin} not allowed`));
+    }
+  },
+  credentials: true,
+}));
+app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 

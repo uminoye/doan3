@@ -15,6 +15,11 @@ function errorHandler(err, req, res, next) {
     return res.status(400).json({ error: err.message });
   }
 
+  // CORS errors
+  if (err.message && err.message.startsWith('CORS:')) {
+    return res.status(403).json({ error: 'Origin not allowed' });
+  }
+
   // Default
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Lỗi server nội bộ';
